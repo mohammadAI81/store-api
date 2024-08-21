@@ -5,6 +5,9 @@ class Category(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=500, blank=True)
     top_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+')
+    
+    def __str__(self):
+        return self.title
 
 
 class Discount(models.Model):

@@ -4,6 +4,7 @@ from decimal import Decimal
 
 class CategorySerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
+    description = serializers.CharField(max_length=500)
 
 
 
@@ -11,8 +12,8 @@ class ProductSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField(max_length=255)
     unit_price = serializers.DecimalField(max_digits=6, decimal_places=2)
-    category = CategorySerializer()
     price_after_tax = serializers.SerializerMethodField(method_name='get_price_rial')
+    category = CategorySerializer()
 
 
     def get_price_rial(self, product):
