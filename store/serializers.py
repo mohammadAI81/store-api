@@ -20,12 +20,12 @@ class ProductSerializer(serializers.ModelSerializer):
     # name = serializers.CharField(max_length=255)
     # unit_price = serializers.DecimalField(max_digits=6, decimal_places=2)
     price_after_tax = serializers.SerializerMethodField(method_name='get_price_rial')
-    category = serializers.HyperlinkedRelatedField(queryset=Category.objects.all(), view_name='category-detail')
-    detail = serializers.SerializerMethodField()
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    # detail = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'unit_price', 'inventory', 'category', 'price_after_tax', 'detail']
+        fields = ['id', 'name', 'unit_price', 'inventory', 'category', 'price_after_tax']
 
 
 
@@ -35,3 +35,4 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_detail(self, product):
         request = self.context['request']
         return request.build_absolute_uri(reverse('product-detail', args=[product.pk]))
+    
