@@ -15,13 +15,13 @@ def product_list(request):
 @api_view(['GET', 'POST'])
 def product_detail(request, pk):
     if request.method == 'GET':
-        product = get_object_or_404(Product, pk=pk)
-        serializer = ProductSerializer(product, context={'request': request})
+        serializer = get_object_or_404(Product, pk=pk)
+        serializer = ProductSerializer(serializer, context={'request': request})
         return Response(serializer.data)
     elif request.method == 'POST':
-        product = ProductSerializer(data=request.data)
-        product.is_valid(raise_exception=True)
-        print(request.data)
+        serializer = ProductSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        print(serializer.validated_data)
         return Response('Okay')
 
 @api_view()
