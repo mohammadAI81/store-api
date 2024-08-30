@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from decimal import Decimal
 from django.urls import reverse
+from django.utils.text import slugify
 
 from .models import Category, Product
 
@@ -23,7 +24,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'unit_price','category', 'price_after_tax']
+        fields = ['id', 'name', 'unit_price','category', 'price_after_tax', 'inventory', 'slug', 'description']
 
 
 
@@ -39,3 +40,8 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'name': 'Product title shoulde be at leate 6'})
         return data
     
+    def create(self, validated_data):
+        product = Product(**validated_data)
+        product.slug = slugify(product.name)
+        product.save()
+        return product
