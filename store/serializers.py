@@ -19,16 +19,16 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     # name = serializers.CharField(max_length=255)
     # unit_price = serializers.DecimalField(max_digits=6, decimal_places=2)
-    price_after_tax = serializers.SerializerMethodField(method_name='get_price_rial')
+    price_after_tax = serializers.SerializerMethodField(method_name='get_after_tax')
     # detail = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'unit_price','category', 'price_after_tax', 'inventory', 'slug', 'description']
+        fields = ['id', 'name', 'unit_price','category', 'price_after_tax', 'inventory', 'description']
 
 
 
-    def get_price_rial(self, product):
+    def get_after_tax(self, product):
         return round(product.unit_price * Decimal(1.09), 2)
 
     def get_detail(self, product):
@@ -45,3 +45,8 @@ class ProductSerializer(serializers.ModelSerializer):
         product.slug = slugify(product.name)
         product.save()
         return product
+
+    # def update(self, instance, validated_data):
+    #     instance.inventory = validated_data.get('inventory')
+    #     instance.save()
+    #     return instance

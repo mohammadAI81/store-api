@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
@@ -19,11 +20,17 @@ def product_list(request):
         return Response('Okay')
 
 
-@api_view()
-def product_detail(request, pk):    
-        serializer = get_object_or_404(Product, pk=pk)
-        serializer = ProductSerializer(serializer, context={'request': request})
+@api_view(['GET', 'PUT', 'DELETE'])
+def product_detail(request, pk): 
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'GET':   
+        serializer = ProductSerializer(product, context={'request': request})
         return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = ProductSerializer(product, request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'title': 'Product Is Update', 'description': serializer.data})
 
 
 @api_view()
