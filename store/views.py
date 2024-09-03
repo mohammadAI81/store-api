@@ -31,6 +31,11 @@ def product_detail(request, pk):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'title': 'Product Is Update', 'description': serializer.data})
+    elif request.method == 'DELETE':
+        if product.order_items.count()> 0:
+            return Response({'error': 'you have orider items you should first delete then'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view()
