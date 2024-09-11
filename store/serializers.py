@@ -17,7 +17,7 @@ class CategorySerializer(serializers.ModelSerializer):
         
     
     def get_porducts_num(self, category):
-        return category.product_count
+        return category.products.count()
     
     def validate(self, attrs):
         if len(attrs['title']) < 3:
