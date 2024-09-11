@@ -38,8 +38,31 @@ def product_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
+def category_list(request):
+    if request.method == 'GET':
+        categories = Category.objects.annotate(product_count=Count('products')).all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        category = CategorySerializer(data=request.data)
+        category.is_valid(raise_exception=True)
+        category.save()
+        return Response(['okay', category.data], status=status.HTTP_201_CREATED)
+
+@api_view(['GET', 'PUT', 'DELETE'])
 def category_detail(request, pk):
-    category = get_object_or_404(Category, pk=pk)
-    serializer = CategorySerializer(category)
-    return Response({'category': serializer.data})
+    category = get_object_or_404(Category.objects.annotate(product_count=Count('products')), pk=pk)
+    if request.method == 'GET':
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = CategorySerializer(instance=category, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    elif request.method == 'DELETE':
+        if category.products.count() > 0:
+            return Response({"errors": 'error'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

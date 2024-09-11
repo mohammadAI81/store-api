@@ -2,17 +2,38 @@ from rest_framework import serializers
 from decimal import Decimal
 from django.urls import reverse
 from django.utils.text import slugify
+from django.db.models import Count
 
 from .models import Category, Product
 
 
 class CategorySerializer(serializers.ModelSerializer):
     
+    porducts_num = serializers.SerializerMethodField()
+    
     class Meta:
         model = Category
-        fields = ['title', 'description']
-    title = serializers.CharField(max_length=255)
-    description = serializers.CharField(max_length=500)
+        fields = ['id', 'title', 'description', 'porducts_num']
+        
+    
+    def get_porducts_num(self, category):
+        return category.product_count
+    
+    def validate(self, attrs):
+        if len(attrs['title']) < 3:
+            raise serializers.ValidationError({'name': 'your name is must more than 3'})
+        return attrs
+
+    def create(self, validated_data):
+        category = Category(**validated_data)
+        category.save()
+        return category
+    
+    # def update(self, instance, validated_data):
+    #     instance.title = validated_data.get('title')
+    #     instance.save()
+    #     return instance
+    
 
 
 
@@ -45,7 +66,7 @@ class ProductSerializer(serializers.ModelSerializer):
         product.slug = slugify(product.name)
         product.save()
         return product
-
+ 
     # def update(self, instance, validated_data):
     #     instance.inventory = validated_data.get('inventory')
     #     instance.save()
