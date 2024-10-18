@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.db.models import Count
 
-from .models import Category, Product
+from .models import Category, Product, Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -71,3 +71,14 @@ class ProductSerializer(serializers.ModelSerializer):
     #     instance.inventory = validated_data.get('inventory')
     #     instance.save()
     #     return instance
+    
+    
+class CommentSerializer(serializers.ModelSerializer):
+    
+    product = serializers.StringRelatedField()
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'name', 'body', 'status', 'product']
+        
+        

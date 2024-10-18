@@ -28,6 +28,10 @@ class Product(models.Model):
     
     class Meta:
         ordering = ('id', )
+        
+        
+    def __str__(self) -> str:
+        return self.name
 
 
 class Customer(models.Model):
