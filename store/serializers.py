@@ -2,7 +2,6 @@ from rest_framework import serializers
 from decimal import Decimal
 from django.urls import reverse
 from django.utils.text import slugify
-from django.db.models import Count
 
 from .models import Category, Product, Comment
 
@@ -75,10 +74,14 @@ class ProductSerializer(serializers.ModelSerializer):
     
 class CommentSerializer(serializers.ModelSerializer):
     
-    product = serializers.StringRelatedField()
+    # product = serializers.StringRelatedField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'name', 'body', 'status', 'product']
+        fields = ['id', 'name', 'body', 'status']
+        
+    def create(self, validated_data):
+        product_id = self.context.get('product_pk')
+        return Comment.objects.create(product_id=product_id, **validated_data)
         
         

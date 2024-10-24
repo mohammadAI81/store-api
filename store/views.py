@@ -41,6 +41,10 @@ class CommentViewSet(ModelViewSet):
     def get_queryset(self):
         if 'product_pk' in self.kwargs:
             product_pk = self.kwargs['product_pk']
-            return Comment.objects.filter(product_id=product_pk)
+            return Comment.objects.filter(product_id=product_pk).select_related('product')
         else:
             return Comment.objects.select_related('product')
+        
+    def get_serializer_context(self):
+        if 'product_pk' in self.kwargs:
+            return {'product_pk': self.kwargs['product_pk']}
