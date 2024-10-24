@@ -8,8 +8,14 @@ from .serializers import CategorySerializer, ProductSerializer, CommentSerialize
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.select_related('category')
     serializer_class = ProductSerializer
+    
+    def get_queryset(self):
+        queryset_product = Product.objects.select_related('category')
+        queryset_id_params = self.request.query_params.get('category_id')
+        if queryset_id_params is not None :
+            queryset_product = queryset_product.filter(category_id=queryset_id_params)
+        return queryset_product
     
     def get_serializer_context(self):
         return {'request': self.request}
