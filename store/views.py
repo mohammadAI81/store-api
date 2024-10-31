@@ -1,9 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
+
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
 from django_filters.rest_framework import DjangoFilterBackend
 
+from .filters import ProductFilterSet
 from .models import Category, Product, Comment
 from .serializers import CategorySerializer, ProductSerializer, CommentSerializer
 
@@ -12,7 +15,8 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['category_id', 'inventory']
+    # filterset_fields = ['category_id', 'inventory']
+    filterset_class = ProductFilterSet
     
     def get_serializer_context(self):
         return {'request': self.request}
