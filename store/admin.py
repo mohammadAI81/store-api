@@ -146,3 +146,15 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_per_page = 20
     ordering = ['product']
     autocomplete_fields = ['product', 'order']
+  
+    
+class CartItemInline(admin.TabularInline):
+    model = models.CartItem
+    fields = ['id', 'product', 'quantity']
+    extra = 1
+    
+    
+@admin.register(models.Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['id']
+    inlines = [CartItemInline]

@@ -2,15 +2,16 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
 
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .paginations import DefaultProductPagination
 from .filters import ProductFilterSet
-from .models import Category, Product, Comment
-from .serializers import CategorySerializer, ProductSerializer, CommentSerializer
+from .models import Cart, Category, Product, Comment
+from .serializers import CartSerailizer, CategorySerializer, ProductSerializer, CommentSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -60,3 +61,9 @@ class CommentViewSet(ModelViewSet):
     def get_serializer_context(self):
         if 'product_pk' in self.kwargs:
             return {'product_pk': self.kwargs['product_pk']}
+        
+        
+class CartViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
+    serializer_class = CartSerailizer
+    queryset = Cart.objects.all()
+    
