@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-from django.db.models import Prefetch
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -66,5 +65,5 @@ class CommentViewSet(ModelViewSet):
         
 class CartViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
     serializer_class = CartSerailizer
-    queryset = Cart.objects.prefetch_related('items')
+    queryset = Cart.objects.prefetch_related('items__product')
     

@@ -84,20 +84,33 @@ class CommentSerializer(serializers.ModelSerializer):
         product_id = self.context.get('product_pk')
         return Comment.objects.create(product_id=product_id, **validated_data)
     
-    
+
+class CartProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['name', 'unit_price']
+
     
 class CartItemSerailizer(serializers.ModelSerializer):
-    product = ProductSerializer()
+    product = CartProductSerializer()
+    total_price = serializers.SerializerMethodField()
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity']
+        fields = ['id', 'product', 'quantity', 'total_price']
+
+    def get_total_price(self, cart_item):
+        return cart_item.quantity * cart_item.product.unit_price
     
 class CartSerailizer(serializers.ModelSerializer):
     items = CartItemSerailizer(many=True, read_only=True)
+    total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
-        fields = ['id', 'items']
+        fields = ['id', 'items', 'total_price']
         read_only_fields = ['id',]
+        
+    def get_total_price(self, cart):
+        return sum([item.quantity * item.product.unit_price for item in cart.items.all()])
         
         
