@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Prefetch
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .paginations import DefaultProductPagination
 from .filters import ProductFilterSet
-from .models import Cart, Category, Product, Comment
+from .models import Cart, CartItem, Category, Product, Comment
 from .serializers import CartSerailizer, CategorySerializer, ProductSerializer, CommentSerializer
 
 
@@ -65,5 +66,5 @@ class CommentViewSet(ModelViewSet):
         
 class CartViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
     serializer_class = CartSerailizer
-    queryset = Cart.objects.all()
+    queryset = Cart.objects.prefetch_related('items')
     
