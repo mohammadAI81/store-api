@@ -101,13 +101,16 @@ class CartItemSerailizer(serializers.ModelSerializer):
     def get_total_price(self, cart_item):
         return cart_item.quantity * cart_item.product.unit_price
     
+    def create(self, validated_data):
+        cart_pk = self.context.get('cart_pk')
+        return CartItem.objects.create(cart_id=cart_pk, **validated_data)
+    
 class CartSerailizer(serializers.ModelSerializer):
-    items = CartItemSerailizer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
-        fields = ['id', 'items', 'total_price']
+        fields = ['id', 'total_price']
         read_only_fields = ['id',]
         
     def get_total_price(self, cart):
