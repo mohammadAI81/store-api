@@ -88,8 +88,19 @@ class CommentSerializer(serializers.ModelSerializer):
 class CartProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['name', 'unit_price']
+        fields = ['id', 'name', 'unit_price']
 
+
+
+class AddCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product', 'quantity']
+        
+    def create(self, validated_data):
+        cart_pk = self.context.get('cart_pk')
+        return CartItem.objects.create(cart_id=cart_pk, **validated_data)
+    
     
 class CartItemSerailizer(serializers.ModelSerializer):
     product = CartProductSerializer()
@@ -101,9 +112,6 @@ class CartItemSerailizer(serializers.ModelSerializer):
     def get_total_price(self, cart_item):
         return cart_item.quantity * cart_item.product.unit_price
     
-    def create(self, validated_data):
-        cart_pk = self.context.get('cart_pk')
-        return CartItem.objects.create(cart_id=cart_pk, **validated_data)
     
 class CartSerailizer(serializers.ModelSerializer):
     total_price = serializers.SerializerMethodField()
