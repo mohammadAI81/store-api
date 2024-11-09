@@ -69,7 +69,7 @@ class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, Gener
     
     
 class CartItemViewSet(ModelViewSet):
-    # http_method_names = ['GET', 'POST', 'PATCH']
+    http_method_names = ['get', 'patch', 'post', 'delete']
     
     def get_queryset(self):
         cart_pk = self.kwargs['cart_pk']
