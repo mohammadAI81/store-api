@@ -25,9 +25,9 @@ class InventoryFilter(admin.SimpleListFilter):
     
     def lookups(self, request, model_admin):
         return [
-            (InventoryFilter.LESS_THAN_3, 'High'),
+            (InventoryFilter.LESS_THAN_3, 'Low'),
             (InventoryFilter.BETWEEN_3_AND_10, 'Medium'),
-            (InventoryFilter.MORE_THAN_10, 'Ok'),
+            (InventoryFilter.MORE_THAN_10, 'High'),
         ]
         
     def queryset(self, request, queryset):
@@ -129,11 +129,11 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'email', 'name']
-    list_display_links = ['first_name', 'last_name']
+    list_display = ['user__first_name', 'user__last_name', 'user__email', 'name']
+    list_display_links = ['user__first_name', 'user__last_name']
     list_per_page = 10
-    ordering = ['last_name', 'first_name']
-    search_fields = ['first_name__istartswith', 'last_name__istartswith']
+    ordering = ['user__last_name', 'user__first_name']
+    search_fields = ['user__first_name__istartswith', 'user__last_name__istartswith']
     
     @admin.display(ordering='last_name', description='Full name')
     def name(self, customer):
