@@ -137,7 +137,7 @@ class CustomerAdmin(admin.ModelAdmin):
     
     @admin.display(ordering='last_name', description='Full name')
     def name(self, customer):
-        return customer.first_name + ' ' + customer.last_name
+        return customer.user.first_name + ' ' + customer.user.last_name
     
     
 @admin.register(models.OrderItem)
