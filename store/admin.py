@@ -167,4 +167,4 @@ class CartAdmin(admin.ModelAdmin):
 @admin.register(models.Address)
 class AddressAdmin(admin.ModelAdmin):
     list_display = ['city', 'province']
-    list_select_related = ['customer__user']
+    list_select_related = ['customer']
