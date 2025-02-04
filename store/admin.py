@@ -1,5 +1,8 @@
+from typing import Any
 from django.contrib import admin, messages
 from django.db.models import Count
+from django.db.models.query import QuerySet
+from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.http import urlencode
@@ -134,6 +137,7 @@ class CustomerAdmin(admin.ModelAdmin):
     list_per_page = 10
     ordering = ['user__last_name', 'user__first_name']
     search_fields = ['user__first_name__istartswith', 'user__last_name__istartswith']
+    list_select_related = ['user']
     
     @admin.display(ordering='last_name', description='Full name')
     def name(self, customer):
@@ -158,3 +162,9 @@ class CartItemInline(admin.TabularInline):
 class CartAdmin(admin.ModelAdmin):
     list_display = ['id']
     inlines = [CartItemInline]
+    
+    
+@admin.register(models.Address)
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ['city', 'province']
+    list_select_related = ['customer__user']
