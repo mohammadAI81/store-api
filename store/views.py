@@ -1,19 +1,21 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .paginations import DefaultProductPagination
 from .filters import ProductFilterSet
-from .models import Cart, CartItem, Category, Product, Comment
+from .models import Cart, CartItem, Category, Customer, Product, Comment
 from .serializers import (AddCartItemSerializer, CartItemSerailizer, CartSerailizer, 
-                          CategorySerializer, UpdateCartItemSerializer, ProductSerializer, 
-                          CommentSerializer)
+                          CategorySerializer, CustomerSerializer, UpdateCartItemSerializer, ProductSerializer, 
+                          CommentSerializer, )
 
 
 class ProductViewSet(ModelViewSet):
@@ -86,4 +88,14 @@ class CartItemViewSet(ModelViewSet):
             return UpdateCartItemSerializer
         return CartItemSerailizer
         
+
+class CustomerViewSet(ModelViewSet):
+    serializer_class = CustomerSerializer
+    queryset = Customer.objects.select_related('user')
     
+    @action(detail=False)
+    def me(self, request):
+        user_id = request.user.id
+        customer = Customer.objects.select_related('user').get(user_id=user_id)
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)

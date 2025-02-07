@@ -5,10 +5,11 @@ from . import views
 
 router = routers.DefaultRouter()
 
-router.register('products', views.ProductViewSet, 'product')
-router.register('categories', views.CategoryViewSet, 'category')
-router.register('comments', views.CommentViewSet, 'comment')
-router.register('carts', views.CartViewSet, 'carts')
+router.register('products', views.ProductViewSet, basename='product')
+router.register('categories', views.CategoryViewSet, basename='category')
+router.register('comments', views.CommentViewSet, basename='comment')
+router.register('carts', views.CartViewSet, basename='carts')
+router.register('customers', views.CustomerViewSet, basename='customer')
 
 
 products_comment_router = routers.NestedSimpleRouter(router, 'products', lookup='product')

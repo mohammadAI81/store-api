@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.urls import reverse
 from django.utils.text import slugify
 
-from .models import Cart, CartItem, Category, Product, Comment
+from .models import Cart, CartItem, Category, Customer, Product, Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -141,4 +141,12 @@ class CartSerailizer(serializers.ModelSerializer):
     def get_total_price(self, cart):
         return sum([item.quantity * item.product.unit_price for item in cart.items.all()])
         
-        
+
+class CustomerSerializer(serializers.ModelSerializer):
+    
+    user = serializers.StringRelatedField()
+    
+    class Meta:
+        model = Customer
+        fields = ['id', 'user', 'phone_number']
+        read_only_fields = ['user']
