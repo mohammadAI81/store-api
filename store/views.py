@@ -92,10 +92,17 @@ class CartItemViewSet(ModelViewSet):
 class CustomerViewSet(ModelViewSet):
     serializer_class = CustomerSerializer
     queryset = Customer.objects.select_related('user')
+    permission_classes = [IsAdminUser]
     
-    @action(detail=False)
+    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
     def me(self, request):
         user_id = request.user.id
         customer = Customer.objects.select_related('user').get(user_id=user_id)
-        serializer = CustomerSerializer(customer)
-        return Response(serializer.data)
+        if request.method == 'GET':    
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        elif request.method == 'PUT':
+            serializer = CustomerSerializer(instance=customer, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
