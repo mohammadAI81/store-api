@@ -13,6 +13,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .paginations import DefaultProductPagination
 from .filters import ProductFilterSet
 from .models import Cart, CartItem, Category, Customer, Product, Comment
+from .permissions import IsAdminOrReadOnly
 from .serializers import (AddCartItemSerializer, CartItemSerailizer, CartSerailizer, 
                           CategorySerializer, CustomerSerializer, UpdateCartItemSerializer, ProductSerializer, 
                           CommentSerializer, )
@@ -42,6 +43,7 @@ class ProductViewSet(ModelViewSet):
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.prefetch_related('products')
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
     
     def destroy(self, request, pk):
         category = get_object_or_404(Category, pk=pk)
