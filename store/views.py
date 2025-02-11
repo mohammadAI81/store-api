@@ -120,6 +120,14 @@ class CustomerViewSet(ModelViewSet):
 class OrderViewSet(ModelViewSet):
     serializer_class = OrderSerializer
 
+    def get_queryset(self):
+        return Order.objects.prefetch_related(
+            Prefetch(
+                'items',
+                OrderItem.objects.select_related('product')
+            )
+        ).select_related('customer__user')
+
 
 class OrderItemsViewSet(ModelViewSet):
     serializer_class = OrderItemSerializer

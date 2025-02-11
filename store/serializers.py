@@ -142,9 +142,17 @@ class CartSerailizer(serializers.ModelSerializer):
         return sum([item.quantity * item.product.unit_price for item in cart.items.all()])
         
 
-class CustomerSerializer(serializers.ModelSerializer):
+class OrderCustomSerailizer(serializers.ModelSerializer):
+    first_name = serializers.CharField(max_length=255, source='user.first_name')
+    last_name = serializers.CharField(max_length=255, source='user.last_name')
+    email = serializers.CharField(max_length=255, source='user.email')
     
-    user = serializers.StringRelatedField()
+    class Meta:
+        model = Customer
+        fields = ['id', 'first_name', 'last_name', 'email']
+
+
+class CustomerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Customer
@@ -162,11 +170,13 @@ class OrderItemSerializer(serializers.ModelSerializer):
     product = OrderItemProductSerializer()
     class Meta:
         model = OrderItem
-        fields = ['id', 'order', 'product', 'quantity', 'unit_price']
+        fields = ['id', 'product', 'quantity', 'unit_price']
+
 
         
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
+    customer = OrderCustomSerailizer()
     class Meta:
         model = Order
-        fields = ['id', 'customer_id', 'datetime_created', 'status', 'items']
+        fields = ['id', 'customer', 'datetime_created', 'status', 'items']
