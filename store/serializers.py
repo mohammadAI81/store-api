@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.urls import reverse
 from django.utils.text import slugify
 
-from .models import Cart, CartItem, Category, Customer, Product, Comment
+from .models import Cart, CartItem, Category, Customer, Order, OrderItem, Product, Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -150,3 +150,23 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ['id', 'user', 'phone_number']
         read_only_fields = ['user']
+        
+
+class OrderItemProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'unit_price']
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    product = OrderItemProductSerializer()
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'order', 'product', 'quantity', 'unit_price']
+
+        
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
+    class Meta:
+        model = Order
+        fields = ['id', 'customer_id', 'datetime_created', 'status', 'items']
