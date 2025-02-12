@@ -216,16 +216,23 @@ class OrderCreateSerializer(serializers.Serializer):
         order.save()
         
         cart_items = CartItem.objects.select_related('product').filter(cart_id=cart_id)
+        
+        order_items = [OrderItem(
+            order_id=order.id,
+            product_id=item.product.id,
+            quantity = item.quantity,
+            unit_price = item.product.unit_price,
+            ) for item in cart_items]
             
-        order_items = list()
-        for item in cart_items:
-            order_item = OrderItem()
-            order_item.order_id = order.id
-            order_item.product_id = item.product.id
-            order_item.quantity = item.quantity
-            order_item.unit_price = item.product.unit_price
+        # order_items = list()
+        # for item in cart_items:
+        #     order_item = OrderItem()
+        #     order_item.order_id = order.id
+        #     order_item.product_id = item.product.id
+        #     order_item.quantity = item.quantity
+        #     order_item.unit_price = item.product.unit_price
 
-            order_items.append(order_item)
+        #     order_items.append(order_item)
             
         OrderItem.objects.bulk_create(order_items)
         
