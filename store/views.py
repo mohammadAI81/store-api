@@ -122,6 +122,7 @@ class CustomerViewSet(ModelViewSet):
     
 class OrderViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
+    
 
     def get_queryset(self):
         queryset = Order.objects.prefetch_related(

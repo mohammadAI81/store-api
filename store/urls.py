@@ -23,5 +23,3 @@ order_items_router = routers.NestedSimpleRouter(router, 'orders', lookup='order'
 order_items_router.register('items', views.OrderItemsViewSet, basename='order-items')
 
 urlpatterns = router.urls + products_comment_router.urls + cart_cart_item_router.urls + order_items_router.urls
-
-
