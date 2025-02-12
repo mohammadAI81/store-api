@@ -15,9 +15,12 @@ from .paginations import DefaultProductPagination
 from .filters import ProductFilterSet
 from .models import Cart, CartItem, Category, Customer, Order, OrderItem, Product, Comment
 from .permissions import IsAdminOrReadOnly, SendPrivateEmailToCustomer, CustomDjangoModelPermission
-from .serializers import (AddCartItemSerializer, CartItemSerailizer, CartSerailizer, 
-                          CategorySerializer, CustomerSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer, ProductSerializer, 
-                          CommentSerializer, )
+from .serializers import (
+                    AddCartItemSerializer, CartItemSerailizer, CartSerailizer, 
+                    CategorySerializer, CustomerSerializer, OrderAdminSerializer, OrderItemSerializer,  
+                    CommentSerializer, OrderSerializer, UpdateCartItemSerializer, ProductSerializer,
+                    OrderCreateSerializer
+                )
 
 
 class ProductViewSet(ModelViewSet):
@@ -118,15 +121,31 @@ class CustomerViewSet(ModelViewSet):
     
     
 class OrderViewSet(ModelViewSet):
-    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.prefetch_related(
+        queryset = Order.objects.prefetch_related(
             Prefetch(
                 'items',
                 OrderItem.objects.select_related('product')
             )
         ).select_related('customer__user')
+        user = self.request.user
+        if user.is_staff:
+            return queryset
+        
+        return queryset.filter(customer__user_id=self.request.user.id)
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return OrderCreateSerializer
+        if self.request.user.is_staff:
+            return OrderAdminSerializer
+        return OrderSerializer
+    
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.id}
+
 
 
 class OrderItemsViewSet(ModelViewSet):

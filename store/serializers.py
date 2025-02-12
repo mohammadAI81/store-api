@@ -1,7 +1,7 @@
-from rest_framework import serializers
 from decimal import Decimal
 from django.urls import reverse
 from django.utils.text import slugify
+from rest_framework import serializers
 
 from .models import Cart, CartItem, Category, Customer, Order, OrderItem, Product, Comment
 
@@ -174,9 +174,42 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
         
-class OrderSerializer(serializers.ModelSerializer):
+class OrderAdminSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
     customer = OrderCustomSerailizer()
     class Meta:
         model = Order
         fields = ['id', 'customer', 'datetime_created', 'status', 'items']
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
+    class Meta:
+        model = Order
+        fields = ['id', 'datetime_created', 'status', 'items']
+
+
+class OrderCreateSerializer(serializers.Serializer):
+    cart_id=serializers.UUIDField()
+    
+    def validate_cart_id(self, cart_id):
+        try:
+            if Cart.objects.prefetch_related('items').get(id=cart_id).items.count() == 0:
+                raise serializers.ValidationError('This cart is empyu.')
+        except Cart.DoesNotExist:
+            raise serializers.ValidationError('This cart is not.')
+        
+        # if not Cart.objects.filter(id=cart_id).exists():
+        #     raise serializers.ValidationError('This not cart id.')
+        # if CartItem.objects.get(cart_id=cart_id).items.count() == 0:
+        #     raise serializers.ValidationError('this cart is Empty.')
+        
+        return cart_id
+    
+    def save(self, **kwargs):
+        cart_id = self.validated_data['cart_id']
+        user_id = self.context['user_id']
+        customer = Customer.objects.get(user_id=user_id)
+
+        print(f'{cart_id=} {customer.user.first_name=}')
+            
