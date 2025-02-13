@@ -144,9 +144,15 @@ class OrderViewSet(ModelViewSet):
             return OrderAdminSerializer
         return OrderSerializer
     
-    def get_serializer_context(self):
-        return {'user_id': self.request.user.id}
-
+    def create(self, request, *args, **kwargs):
+        create_order_Serializer = OrderCreateSerializer(
+            data=request.data,
+            context={'user_id': self.request.user.id}
+            )
+        create_order_Serializer.is_valid(raise_exception=True)
+        create_order = create_order_Serializer.save()
+        serializer = OrderSerializer(create_order)
+        return Response(serializer.data)
 
 
 class OrderItemsViewSet(ModelViewSet):
