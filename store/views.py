@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, DjangoModel
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .paginations import DefaultProductPagination
+from .signals import order_create
 from .filters import ProductFilterSet
 from .models import Cart, CartItem, Category, Customer, Order, OrderItem, Product, Comment
 from .permissions import IsAdminOrReadOnly, SendPrivateEmailToCustomer, CustomDjangoModelPermission
@@ -159,6 +160,8 @@ class OrderViewSet(ModelViewSet):
             )
         create_order_Serializer.is_valid(raise_exception=True)
         create_order = create_order_Serializer.save()
+        order_create.send_robust(self.__class__, order=create_order)
+        
         serializer = OrderSerializer(create_order)
         return Response(serializer.data)
 
